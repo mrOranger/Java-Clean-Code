@@ -1,4 +1,4 @@
-package com.edo.oop;
+package it.java.clean_code.oop;
 
 /**
  * Immaginiamo una classe Utente per un gestionale di sistemi informatici.

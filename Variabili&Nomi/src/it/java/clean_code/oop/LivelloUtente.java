@@ -1,4 +1,4 @@
-package com.edo.oop;
+package it.java.clean_code.oop;
 
 /*
  * Definiamo un enumeratore che definisce il livello dell'utente.
