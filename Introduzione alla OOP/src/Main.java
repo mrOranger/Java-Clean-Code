@@ -10,8 +10,6 @@
  *   da un numero progressivo che parte da 0.
  * - Un utente può temporaneamente essere sospeso.
  * - Sarà disponibile anche il metodo per la stampa aggiornata di tutti gli aspetti dell'oggetto.
- * @author Edoardo
- *
  */
 public class Main {
 	
