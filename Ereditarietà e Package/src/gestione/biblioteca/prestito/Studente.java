@@ -37,7 +37,8 @@ public class Studente {
 		byte prestiti = 0;
 		if(this.opera1 != null) {
 			prestiti++;
-		}else if(this.opera2 != null) {
+		}
+		if(this.opera2 != null) {
 			prestiti++;
 		}
 		return prestiti;

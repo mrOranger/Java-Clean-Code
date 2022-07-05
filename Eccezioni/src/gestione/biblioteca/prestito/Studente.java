@@ -1,6 +1,7 @@
 package gestione.biblioteca.prestito;
 
 import gestione.biblioteca.prestito.base.OperaPrestabile;
+import gestione.biblioteca.prestito.eccezioni.PrestitoNonEseguibileException;
 
 public class Studente {
 	
@@ -48,18 +49,16 @@ public class Studente {
 		return this.numeroPrestiti() < MAX_PRESTITI;
 	}
 	
-	public boolean registraPrestito(OperaPrestabile daRegistrare) {
+	public void registraPrestito(OperaPrestabile daRegistrare) throws PrestitoNonEseguibileException{
 		if(!this.prestitiDisponibili()) {
-			return false;
+			// L'utente possiede già in prestito due opere ...
+			throw new PrestitoNonEseguibileException(daRegistrare);
 		}
 		if(this.opera1 == null) {
 			this.opera1 = daRegistrare;
 		} else if (this.opera2 == null) {
 			this.opera2 = daRegistrare;
-		} else {
-			return false;
 		}
-		return true;
 	}
 	
 	public boolean restituisciPrestito(OperaPrestabile daRestituire) {
