@@ -8,12 +8,18 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
 
 public class DatabaseConnection {
 	
 	private static final String CONNECTION_STRING = "jdbc:sqlite:prova.db";
 	private static final String JDBC_CLASS = "org.sqlite.JDBC";
-	private Connection connection;
+	public Connection connection;
+	
+	private static final List<String> NOMI = List.of("Mario", "Maria", "Francesco", "Giuseppina");
+	private static final List<String> COGNOMI = List.of("Rossi", "Verdi", "Neri", "Bianchi");
+	private static final List<String> CITTA = List.of("Bari", "Milano", "Roma", "Napoli");
+	private static final List<Integer> ETA = List.of(23, 19, 87, 56);
 	
 	public DatabaseConnection() {
 		try {
@@ -29,6 +35,22 @@ public class DatabaseConnection {
 		}
 	}
 	
+	public void popolaDb() {
+		for(int i = 0; i < 100; i++) {
+			String nome = NOMI.get((int)(Math.random()*NOMI.size()));
+			String cognome = COGNOMI.get((int)(Math.random()*COGNOMI.size()));
+			String citta = CITTA.get((int)(Math.random()*CITTA.size()));
+			int eta = ETA.get((int)(Math.random()*ETA.size()));
+			this.inserisciPersona(new Persona(nome, cognome, (byte)eta, citta));
+		}
+		try {
+			this.connection.commit();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	
 	public void inserisciPersona(Persona persona) {
 		final String SQL_STATEMENT = "INSERT INTO Persone (nome, cognome, citta, eta) VALUES (?, ?, ?, ?)";
 		try {
@@ -38,7 +60,6 @@ public class DatabaseConnection {
 			preparedStatement.setString(3, persona.getCitta());
 			preparedStatement.setInt(4,(int)persona.getEta());
 			preparedStatement.execute();
-			this.connection.commit();
 		} catch (SQLException e) {
 			this.eseguiRollback();
 			e.printStackTrace();
