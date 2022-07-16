@@ -8,7 +8,7 @@ import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import esempi.Persona;
+import backup.Persona;
 
 public class Serializzazione {
 	

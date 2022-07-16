@@ -2,6 +2,8 @@ package esempi;
 
 import java.util.List;
 
+import backup.Persona;
+
 public class GestionePersona {
 	
 	private static final List<String> NOMI = List.of("Mario", "Marco", "Francesca", "Maria");
