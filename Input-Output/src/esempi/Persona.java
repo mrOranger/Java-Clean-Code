@@ -1,11 +1,13 @@
 package esempi;
 
-public class Persona {
+import java.io.Serializable;
+
+public class Persona implements Serializable{
 	
 	private String nome;
 	private String cognome;
 	private int eta;
-	private String citta;
+	private transient String citta; //Guarantees that the object is not serialized
 	
 	public Persona(String nome, String cognome, int eta, String citta) {
 		this.nome = nome;
