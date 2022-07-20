@@ -44,5 +44,4 @@ public class GestoreOrdini {
 	public long ordiniElaborati() {
 		return this.numeroOrdini.longValue();
 	}
-
 }
