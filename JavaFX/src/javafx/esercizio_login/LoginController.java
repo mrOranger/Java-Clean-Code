@@ -11,6 +11,8 @@ import javafx.stage.Stage;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import java.io.IOException;
+
+import javafx.esercizio_login.database.DatabaseManager;
 import javafx.event.ActionEvent;
 import javafx.scene.control.PasswordField;
 
@@ -24,7 +26,10 @@ public class LoginController {
 	private final String alertMessage = "Please enter valid credentials";
 	private final String alertTitle = "Invalid credentials!";
 	
+	private DatabaseManager database;
+	
 	public LoginController() {
+		this.database = new DatabaseManager();
 		this.setAlert();
 	}
 
@@ -32,6 +37,7 @@ public class LoginController {
 	public void register(ActionEvent event) {
 		try {
 			((Node)(event.getSource())).getScene().getWindow().hide();
+			this.database.closeConnection();
 			new RegisterController().openWindow();
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -43,7 +49,18 @@ public class LoginController {
 		if(!this.checkCredentials()) {
 			this.alert.show();
 		} else {
-			System.out.println("Login: " + username.getText() + " " + password.getText());	
+			String username = this.username.getText();
+			String password = this.password.getText();
+			User user = this.database.getUser(username);
+			if(user != null) {
+				if(user.getPassword().equals(password)) {
+					System.out.println("Login concesso!");
+				} else {
+					System.out.println("Password non corretta");
+				}				
+			} else {
+				System.out.println("Utente non registrato!");
+			}
 		}
 	}
 	
