@@ -9,4 +9,5 @@ module JavaFX {
 	
 	opens javafx.examples.start to javafx.graphics, javafx.fxml;
 	opens javafx.examples.fxml to javafx.graphics, javafx.fxml;
+	opens javafx.esercizio_reparti to javafx.graphics, javafx.fxml;
 }
