@@ -35,8 +35,8 @@ public class LoginController implements Alertable, Openable{
 	public void register(ActionEvent event) {
 		try {
 			((Node)(event.getSource())).getScene().getWindow().hide();
-			this.database.closeConnection();
 			new RegisterController().openWindow("register.fxml", "Register");
+			this.database.closeConnection();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -52,8 +52,10 @@ public class LoginController implements Alertable, Openable{
 			String password = this.password.getText();
 			User user = this.database.getUser(username);
 			
-			if(!this.isPresentUser(user)) {
-				if(user.getPassword().equals(password)) {
+			System.out.println("Utente ritrovato: " + user.toString());
+			
+			if(this.isPresentUser(user)) {
+				if(this.isCorrectPassword(password, user)) {
 					this.showAlert("Login successfull", "Login complete with success", AlertType.INFORMATION);
 				} else {
 					this.showAlert("Wrong password", "The password is not correct!", AlertType.ERROR);
@@ -89,5 +91,9 @@ public class LoginController implements Alertable, Openable{
 	
 	private boolean isPresentUser(User user) {
 		return user != null;
+	}
+	
+	private boolean isCorrectPassword(String password, User user) {
+		return user.getPassword().equals(password);
 	}
 }

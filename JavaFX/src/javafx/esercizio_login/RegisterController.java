@@ -60,10 +60,15 @@ public class RegisterController implements Alertable, Openable{
 			this.showAlert("Invalid credentials!", "The credentials are not valid", AlertType.ERROR);
 			throw new RegisterException("Invalid credentials!");
 		} else {
-			String username = this.username.getText();
-			String password = this.password.getText();
-			this.database.registerUser(username, password);
-			this.showAlert("User registered", "User register with success", AlertType.INFORMATION);
+			try {
+				String username = this.username.getText();
+				String password = this.password.getText();
+				this.database.registerUser(username, password);
+				this.showAlert("User registered", "User register with success", AlertType.INFORMATION);
+				Thread.sleep(5000);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
 		}
 	}
 
