@@ -13,63 +13,68 @@ import javafx.stage.Stage;
 import java.io.IOException;
 
 import javafx.esercizio_login.database.DatabaseManager;
+import javafx.esercizio_login.exceptions.RegisterException;
+import javafx.esercizio_login.services.Alertable;
+import javafx.esercizio_login.services.Openable;
 import javafx.event.ActionEvent;
 import javafx.scene.control.PasswordField;
 
-public class RegisterController {
+public class RegisterController implements Alertable, Openable{
 	@FXML private TextField username;
 	@FXML private PasswordField password;
 	@FXML private Button register_button;
-	
-	private Alert alert;
-	private final String alertMessage = "Please enter valid credentials";
-	private final String alertTitle = "Invalid credentials!";
 	
 	private DatabaseManager database;
 	
 	public RegisterController() {
 		this.database = new DatabaseManager();
-		this.setAlert();
 	}
 
-	public void openWindow() throws IOException {
-		Parent root = FXMLLoader.load(getClass().getResource("register.fxml"));
+	@Override
+	public void openWindow(String fxFile, String title) throws IOException {
+		Parent root = FXMLLoader.load(getClass().getResource(fxFile));
 		Stage stage = new Stage();
 		Scene scene = new Scene(root, 450, 400);
-		stage.setTitle("Register");
+		stage.setTitle(title);
 		stage.setScene(scene);
 		stage.show();
 	}
 	
 	@FXML
 	public void register(ActionEvent event) {
-		this.registerUser();
-		((Node)(event.getSource())).getScene().getWindow().hide();
-		this.database.closeConnection();
 		try {
-			new LoginController().openWindow();
-		} catch (IOException e) {
-			e.printStackTrace();
+			this.registerUser();
+			((Node)(event.getSource())).getScene().getWindow().hide();
+			new LoginController().openWindow("login.fxml", "Login");
+		} catch (RegisterException registerException) {
+			registerException.printStackTrace();
+		} catch (IOException ioException) {
+			ioException.printStackTrace();
+		} finally {
+			this.database.closeConnection();
 		}
 	}
 	
-	private void registerUser() {
+	private void registerUser() throws RegisterException {
 		if(!this.checkCredentials()) {
-			this.alert.show();
+			this.showAlert("Invalid credentials!", "The credentials are not valid", AlertType.ERROR);
+			throw new RegisterException("Invalid credentials!");
 		} else {
 			String username = this.username.getText();
 			String password = this.password.getText();
 			this.database.registerUser(username, password);
-			System.out.println("Utente registrato correttamente!");
+			this.showAlert("User registered", "User register with success", AlertType.INFORMATION);
 		}
+	}
+
+	@Override
+	public void showAlert(String title, String message, AlertType alertType) {
+		Alert alert = new Alert(alertType, message);
+		alert.setTitle(message);
+		alert.show();
 	}
 	
 	private boolean checkCredentials() {
 		return (!this.username.getText().isBlank() || !this.password.getText().isBlank());
-	}
-	
-	private void setAlert() {
-		this.alert = new Alert(AlertType.INFORMATION, this.alertMessage);
-		this.alert.setTitle(this.alertTitle);
 	}
 }

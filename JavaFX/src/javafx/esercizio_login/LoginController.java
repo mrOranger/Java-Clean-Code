@@ -13,24 +13,22 @@ import javafx.scene.control.TextField;
 import java.io.IOException;
 
 import javafx.esercizio_login.database.DatabaseManager;
+import javafx.esercizio_login.exceptions.LoginException;
+import javafx.esercizio_login.services.Alertable;
+import javafx.esercizio_login.services.Openable;
 import javafx.event.ActionEvent;
 import javafx.scene.control.PasswordField;
 
-public class LoginController {
+public class LoginController implements Alertable, Openable{
 	@FXML private TextField username;
 	@FXML private PasswordField password;
 	@FXML private Button register_button;
 	@FXML private Button login_button;
 	
-	private Alert alert;
-	private final String alertMessage = "Please enter valid credentials";
-	private final String alertTitle = "Invalid credentials!";
-	
 	private DatabaseManager database;
 	
 	public LoginController() {
 		this.database = new DatabaseManager();
-		this.setAlert();
 	}
 
 	@FXML
@@ -38,47 +36,58 @@ public class LoginController {
 		try {
 			((Node)(event.getSource())).getScene().getWindow().hide();
 			this.database.closeConnection();
-			new RegisterController().openWindow();
+			new RegisterController().openWindow("register.fxml", "Register");
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
 	
 	@FXML
-	public void login(ActionEvent event) {
+	public void login(ActionEvent event) throws LoginException {
 		if(!this.checkCredentials()) {
-			this.alert.show();
+			this.showAlert("Invalid credentials!", "Please write valid credentials", AlertType.WARNING);
+			throw new LoginException("Invalid credentials!");
 		} else {
 			String username = this.username.getText();
 			String password = this.password.getText();
 			User user = this.database.getUser(username);
-			if(user != null) {
+			
+			if(!this.isPresentUser(user)) {
 				if(user.getPassword().equals(password)) {
-					System.out.println("Login concesso!");
+					this.showAlert("Login successfull", "Login complete with success", AlertType.INFORMATION);
 				} else {
-					System.out.println("Password non corretta");
+					this.showAlert("Wrong password", "The password is not correct!", AlertType.ERROR);
+					throw new LoginException("The password is not correct!");
 				}				
 			} else {
-				System.out.println("Utente non registrato!");
+				this.showAlert("User not registered", "The user is not registered in the Database", AlertType.ERROR);
+				throw new LoginException("User not registered!");
 			}
 		}
 	}
 	
-	public void openWindow() throws IOException {
-		Parent root = FXMLLoader.load(getClass().getResource("login.fxml"));
+	@Override
+	public void openWindow(String fxFile, String title) throws IOException {
+		Parent root = FXMLLoader.load(getClass().getResource(fxFile));
 		Stage stage = new Stage();
 		Scene scene = new Scene(root, 450, 400);
-		stage.setTitle("Login");
+		stage.setTitle(title);
 		stage.setScene(scene);
 		stage.show();
+	}
+	
+	@Override
+	public void showAlert(String title, String message, AlertType alertType) {
+		Alert alert = new Alert(alertType, message);
+		alert.setTitle(message);
+		alert.show();
 	}
 	
 	private boolean checkCredentials() {
 		return (!this.username.getText().isBlank() || !this.password.getText().isBlank());
 	}
 	
-	private void setAlert() {
-		this.alert = new Alert(AlertType.INFORMATION, this.alertMessage);
-		this.alert.setTitle(this.alertTitle);
+	private boolean isPresentUser(User user) {
+		return user != null;
 	}
 }
